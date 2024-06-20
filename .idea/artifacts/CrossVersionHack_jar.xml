@@ -6,7 +6,7 @@
         <element id="module-output" name="CrossVersionHack" />
       </element>
       <element id="library" level="project" name="tools" />
-      <element id="file-copy" path="$PROJECT_DIR$/librart/attach.dll" />
+      <element id="file-copy" path="$PROJECT_DIR$/library/attach.dll" />
     </root>
   </artifact>
 </component>
