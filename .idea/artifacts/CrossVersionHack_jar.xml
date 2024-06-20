@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact name="CrossVersionHack:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CrossVersionHack_jar</output-path>
+    <root id="root">
+      <element id="archive" name="CrossVersionHack.jar">
+        <element id="module-output" name="CrossVersionHack" />
+      </element>
+      <element id="library" level="project" name="tools" />
+      <element id="file-copy" path="$PROJECT_DIR$/librart/attach.dll" />
+    </root>
+  </artifact>
+</component>
