@@ -1,48 +1,39 @@
-package zn.cvh.wrappers;
+package zn.cvh.wrapper.wrappers;
 
 import zn.cvh.agent.Agent;
 import zn.cvh.utils.ClassDiscoverer;
 import zn.cvh.utils.CustomBoundingBox;
+import zn.cvh.wrapper.Wrapper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class WrapperEntity {
-
-    private Object entityObj;
-    private Class<?> entityClass;
-    private Field rotationYaw;
-    private Field rotationPitch;
-    private Field posX;
-    private Field posY;
-    private Field posZ;
-    private Field width;
-    private Field height;
-
-    private Class<?> axisAlignedBBClass;
-
-
-    public WrapperEntity(Object entityObj) {
-        try {
-            this.entityObj = entityObj;
-            this.entityClass = entityObj.getClass();
-            this.rotationYaw = this.entityClass.getField("field_70177_z");
-            this.rotationPitch = this.entityClass.getField("field_70125_A");
-            this.posX = this.entityClass.getField("field_70165_t");
-            this.posY = this.entityClass.getField("field_70163_u");
-            this.posZ = this.entityClass.getField("field_70161_v");
-            this.width = this.entityClass.getField("field_70130_N");
-            this.height = this.entityClass.getField("field_70131_O");
-
-            this.axisAlignedBBClass = new ClassDiscoverer(Agent.getInstance().getInstrumentation()).getAxisAlignedBBClass();
-
-            System.out.println("axisAlignedBBClass: " + axisAlignedBBClass + "\n");
+public class Entity extends Wrapper {
+    public Object entityObj;
+    public Field rotationYaw;
+    public Field rotationPitch;
+    public Field posX;
+    public Field posY;
+    public Field posZ;
+    public Field width;
+    public Field height;
+    public Class<?> axisAlignedBBClass;
+    
+    public Entity(Object entityObj) throws NoSuchFieldException {
+        super();
+        this.entityObj = entityObj;
+        clazz = entityObj.getClass();
+        this.rotationYaw = this.clazz.getField("field_70177_z");
+        this.rotationPitch = this.clazz.getField("field_70125_A");
+        this.posX = this.clazz.getField("field_70165_t");
+        this.posY = this.clazz.getField("field_70163_u");
+        this.posZ = this.clazz.getField("field_70161_v");
+        this.width = this.clazz.getField("field_70130_N");
+        this.height = this.clazz.getField("field_70131_O");
+        this.axisAlignedBBClass = new ClassDiscoverer(Agent.getInstance().getInstrumentation()).getAxisAlignedBBClass();
 
 
-        } catch (Exception exception) {
-
-        }
     }
 
     public float[] getViewAngles() throws IllegalAccessException {
@@ -90,10 +81,10 @@ public class WrapperEntity {
         return this.height.getDouble(this.entityObj);
     }
 
-    public double getDistanceToEntity(WrapperEntityPlayer cPlayer) throws IllegalAccessException {
-        double deltaX = getPosX() - WrapperMinecraft.cPlayer.getPosX();
-        double deltaZ = getPosZ() - WrapperMinecraft.cPlayer.getPosZ();
-        double deltaY = getPosY() - WrapperMinecraft.cPlayer.getPosY();
+    public double getDistanceToEntity(Entity entity) throws IllegalAccessException {
+        double deltaX = getPosX() - entity.getPosX();
+        double deltaZ = getPosZ() - entity.getPosZ();
+        double deltaY = getPosY() - entity.getPosY();
         double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
         return distance;
     }
@@ -121,4 +112,21 @@ public class WrapperEntity {
         }
     }
 
+    public boolean isAlive() {
+        try {
+            return (Boolean) clazz.getMethod("func_70089_S").invoke(entityObj);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    public boolean isEntityLivingBase() {
+        return clazz == classDiscoverer.getEntityLivingBaseClass();
+    }
+
+    public double getEyeHeight() {
+        return 1;
+    }
 }

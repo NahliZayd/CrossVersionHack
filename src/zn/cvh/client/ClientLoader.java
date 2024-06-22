@@ -6,7 +6,7 @@ import zn.cvh.module.modules.SmoothAimbot;
 import zn.cvh.module.modules.Triggerbot;
 import zn.cvh.ui.UIFrame;
 import zn.cvh.utils.ClassDiscoverer;
-import zn.cvh.wrappers.WrapperMinecraft;
+import zn.cvh.wrapper.WrapperManager;
 
 import javax.swing.*;
 import java.lang.instrument.Instrumentation;
@@ -14,34 +14,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientLoader {
-    private final Instrumentation inst;
+    private Instrumentation inst;
     private UIFrame concealUI;
-    private final List<Mod> modules = new ArrayList();
-    private final ClientThread moduleThread;
+    private final List<Mod> modules = new ArrayList<>();
+    private ClientThread moduleThread;
     public JSlider aimbotForce;
     public ClassDiscoverer discoverer;
 
     public ClientLoader(Instrumentation inst) {
-        this.inst = inst;
-
-        discoverer = new ClassDiscoverer(inst);
-        new WrapperMinecraft(discoverer.getMinecraftClass());
+        if (inst != null) {
+            this.inst = inst;
+            this.discoverer = new ClassDiscoverer(inst);
+            try {
+                new WrapperManager(this.discoverer);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
         try {
-            this.modules.add(new SmoothAimbot(this));
+            this.modules.add(new SmoothAimbot());
             this.modules.add(new Triggerbot());
             this.modules.add(new Reach());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        UIFrame concealUI = new UIFrame(this);
-        concealUI.show();
-        this.moduleThread = new ClientThread(this);
-        this.moduleThread.start();
+
+
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                this.concealUI = new UIFrame(this);
+                concealUI.show();
+                System.out.println("UIFrame initialized and shown.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        if (inst != null) {
+            this.moduleThread = new ClientThread(this);
+            this.moduleThread.start();
+        }
     }
 
-
     public void closing() {
-        this.moduleThread.stop();
+        if (this.moduleThread != null) {
+            this.moduleThread.stop();
+        }
         this.modules.clear();
     }
 

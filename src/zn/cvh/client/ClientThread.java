@@ -1,7 +1,7 @@
 package zn.cvh.client;
 
 import zn.cvh.module.Mod;
-import zn.cvh.wrappers.WrapperMinecraft;
+import zn.cvh.wrapper.WrapperManager;
 
 public class ClientThread extends Thread {
     private final ClientLoader parent;
@@ -12,23 +12,28 @@ public class ClientThread extends Thread {
 
     @Override
     public void run() {
-        try {
+
             while (true) {
-                try {
-                    WrapperMinecraft.cPlayer.playerObj = WrapperMinecraft.cPlayer.playerField.get(WrapperMinecraft.getInstance().getMinecraftObject());
-                } catch (Exception ex) {
-                }
+
+
+
                 for (final Mod module : this.parent.getModules()) {
                     if (module.isEnabled()) {
-                        module.update();
+                        try {
+                            module.update();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                         module.postUpdate();
                     }
                 }
-                Thread.sleep(1000 / 20);
-
+                try {
+                    Thread.sleep(1000 / 20);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
         }
-    }
+
 }

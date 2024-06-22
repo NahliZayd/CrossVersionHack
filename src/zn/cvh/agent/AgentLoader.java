@@ -6,19 +6,28 @@ import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 
 import java.io.*;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
+import java.util.jar.*;
 
 public class AgentLoader {
     public static void attachAgentToJVM(String pid, Class agent, Class... resources) throws IOException, AttachNotSupportedException, AgentLoadException, AgentInitializationException {
+        System.out.println("Attaching agent to JVM with PID: " + pid);
         VirtualMachine vm = VirtualMachine.attach(pid);
-        vm.loadAgent(AgentLoader.generateAgentJar(agent, resources).getAbsolutePath());
-        vm.detach();
+        try {
+            File agentJar = AgentLoader.generateAgentJar(agent, resources);
+            System.out.println("Generated agent JAR at: " + agentJar.getAbsolutePath());
+            vm.loadAgent(agentJar.getAbsolutePath());
+            System.out.println("Agent loaded successfully.");
+        } catch (AgentInitializationException | AgentLoadException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            vm.detach();
+            System.out.println("Agent detached from JVM.");
+        }
     }
 
     public static File generateAgentJar(Class agent, Class... resources) throws IOException {
+        System.out.println("Generating agent JAR for class: " + agent.getName());
         File jarFile = File.createTempFile("agent", ".jar");
         jarFile.deleteOnExit();
         Manifest manifest = new Manifest();
@@ -27,22 +36,21 @@ public class AgentLoader {
         mainAttributes.put(new Attributes.Name("Agent-Class"), agent.getName());
         mainAttributes.put(new Attributes.Name("Can-Retransform-Classes"), "true");
         mainAttributes.put(new Attributes.Name("Can-Redefine-Classes"), "true");
-        JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), manifest);
-        jos.putNextEntry(new JarEntry(agent.getName().replace('.', '/') + ".class"));
-        jos.write(AgentLoader.getBytesFromStream(agent.getClassLoader().getResourceAsStream(AgentLoader.unqualify(agent))));
-        jos.closeEntry();
-        Class[] arrclass = resources;
-        int n = arrclass.length;
-        int n2 = 0;
-        while (n2 < n) {
-            Class clazz = arrclass[n2];
-            String name = AgentLoader.unqualify(clazz);
-            jos.putNextEntry(new JarEntry(name));
-            jos.write(AgentLoader.getBytesFromStream(clazz.getClassLoader().getResourceAsStream(name)));
+
+        try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), manifest)) {
+            jos.putNextEntry(new JarEntry(agent.getName().replace('.', '/') + ".class"));
+            jos.write(AgentLoader.getBytesFromStream(agent.getClassLoader().getResourceAsStream(AgentLoader.unqualify(agent))));
             jos.closeEntry();
-            ++n2;
+
+            for (Class clazz : resources) {
+                String name = AgentLoader.unqualify(clazz);
+                jos.putNextEntry(new JarEntry(name));
+                jos.write(AgentLoader.getBytesFromStream(clazz.getClassLoader().getResourceAsStream(name)));
+                jos.closeEntry();
+            }
         }
-        jos.close();
+
+        System.out.println("Agent JAR generation complete.");
         return jarFile;
     }
 

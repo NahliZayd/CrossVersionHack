@@ -8,5 +8,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="tools" level="project" />
+    <orderEntry type="library" name="tools (2)" level="project" />
+    <orderEntry type="library" name="flatlaf-3.4.1" level="project" />
+    <orderEntry type="library" name="javassist-3.30.2-GA" level="project" />
   </component>
 </module>

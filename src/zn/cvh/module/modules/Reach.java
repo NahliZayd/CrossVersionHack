@@ -1,81 +1,69 @@
 package zn.cvh.module.modules;
 
-
 import zn.cvh.module.Mod;
 import zn.cvh.module.value.values.DoubleValue;
 import zn.cvh.utils.CustomBoundingBox;
-import zn.cvh.wrappers.WrapperEntity;
-import zn.cvh.wrappers.WrapperMinecraft;
+import zn.cvh.wrapper.wrappers.Entity;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Reach extends Mod {
 
-    private final Field theWorldField;
-    private final Field entitiesField;
-    private final Field inGameHasFocusField;
+    private static final Logger LOGGER = Logger.getLogger(Reach.class.getName());
+
     public DoubleValue minReach = new DoubleValue("Minimum Range", 3.0, 3.0, 6.0);
     public DoubleValue maxReach = new DoubleValue("Maximum Range", 3.5, 3.0, 6.0);
 
     public Reach() throws Exception {
         super("Reach");
-        this.theWorldField = mcClass.getField("field_71441_e");
-        this.entitiesField = this.theWorldField.getType().getField("field_72996_f");
-        this.inGameHasFocusField = mcClass.getField("field_71415_G");
         addValue(minReach);
         addValue(maxReach);
+        LOGGER.info("Reach module initialized with minReach: " + minReach.getValue() + " and maxReach: " + maxReach.getValue());
     }
 
     @Override
     public void update() throws Exception {
-        boolean inGameHasFocus = this.inGameHasFocusField.getBoolean(mcObj);
-
-        if (!inGameHasFocus || this.theWorldField.get(mcObj) == null) {
+        if (!mc.inGameHasFocus() || mc.getPlayer() == null || mc.getWorld() == null) {
+            LOGGER.warning("Game is not focused or player/world is null.");
+            if(mc.getPlayer() == null) LOGGER.warning("Player is null.");
+            if(mc.getWorld() == null) LOGGER.warning("World is null.");
+            if(!mc.inGameHasFocus()) LOGGER.warning("Game is not focused.");
             return;
         }
 
-
-        Object objEntities = this.entitiesField.get(this.theWorldField.get(mcObj));
-        List<?> objEntitiesList = (List<?>) objEntities;
-        List<Object> entitiesCopy = new ArrayList<>(objEntitiesList);
-
-        WrapperEntity closestEntity = null;
+        Entity closestEntity = null;
         double closestDistance = Double.MAX_VALUE;
 
-
-        for (Object o : entitiesCopy) {
-            if (o == WrapperMinecraft.cPlayer.playerObj) continue;
-            WrapperEntity entity = new WrapperEntity(o);
-            if (!((Boolean) o.getClass().getMethod("func_70089_S", new Class[0]).invoke(o, new Object[0])).booleanValue())
-                continue;
-            double distance = entity.getDistanceToEntity(WrapperMinecraft.cPlayer);
-
-
+        for (Entity entity : mc.getWorld().getEntities()) {
+            if (entity.entityObj == mc.getPlayer().entityObj) continue;
+            if (!entity.isAlive()) continue;
+            double distance = entity.getDistanceToEntity(mc.getPlayer());
             if (distance < closestDistance && distance < 10.0) {
                 closestEntity = entity;
                 closestDistance = distance;
             }
         }
 
-
         if (closestEntity != null) {
+            LOGGER.info("Closest entity found at distance: " + closestDistance);
             double x = closestEntity.getPosX();
             double y = closestEntity.getPosY();
             double z = closestEntity.getPosZ();
             double f = getDist() - 3.0;
 
-
-            if (WrapperMinecraft.cPlayer.getDistanceToEntity(closestEntity) > 2.9) {
-
-                double c = Math.hypot(WrapperMinecraft.cPlayer.getPosX() - x, WrapperMinecraft.cPlayer.getPosZ() - z);
+            if (mc.getPlayer().getDistanceToEntity(closestEntity) > 2.9) {
+                double c = Math.hypot(mc.getPlayer().getPosX() - x, mc.getPlayer().getPosZ() - z);
                 if (f > c) {
                     f -= c;
                 }
                 float r = a(x, z);
-                if (a(WrapperMinecraft.cPlayer.getYaw(), r) > 90.0D) {
+                if (a(mc.getPlayer().getYaw(), r) > 90.0D) {
+                    LOGGER.warning("Angle exceeds 90 degrees, aborting.");
                     return;
                 }
                 double aa = Math.cos(Math.toRadians(r + 90.0f));
@@ -83,40 +71,40 @@ public class Reach extends Mod {
                 x -= (aa * f);
                 z -= (bb * f);
 
-
                 double maxX = x + closestEntity.getWidth() / 2;
                 double maxY = y + closestEntity.getHeight();
                 double maxZ = z + closestEntity.getWidth() / 2;
 
-
                 CustomBoundingBox nBounding = new CustomBoundingBox(x - closestEntity.getWidth() / 2, y, z - closestEntity.getWidth() / 2, maxX, maxY, maxZ);
                 closestEntity.setEntityBoundingBox(nBounding);
+                LOGGER.info("Entity bounding box updated.");
             }
+        } else {
+            LOGGER.info("No closest entity found within range.");
         }
     }
 
     private double getDist() {
-        if (minReach.getValue() == maxReach.getValue()) {
-            return minReach.getValue();
-        }
-        return ThreadLocalRandom.current().nextDouble(minReach.getValue(), maxReach.getValue());
+        double dist = (minReach.getValue() == maxReach.getValue()) ? minReach.getValue() : ThreadLocalRandom.current().nextDouble(minReach.getValue(), maxReach.getValue());
+        LOGGER.fine("Generated distance: " + dist);
+        return dist;
     }
 
-    private float a(double ex, double ez) throws IllegalAccessException {
-        double x = ex - WrapperMinecraft.cPlayer.getPosX();
-        double z = ez - WrapperMinecraft.cPlayer.getPosZ();
+    private float a(double ex, double ez) throws Exception {
+        double x = ex - mc.getPlayer().getPosX();
+        double z = ez - mc.getPlayer().getPosZ();
         float y = (float) Math.toDegrees(-Math.atan(x / z));
         if ((z < 0.0) && (x < 0.0)) {
             y = (float) (90.0 + Math.toDegrees(Math.atan(z / x)));
         } else if ((z < 0.0) && (x > 0.0)) {
             y = (float) (-90.0 + Math.toDegrees(Math.atan(z / x)));
         }
+        LOGGER.fine("Calculated angle: " + y);
         return y;
     }
 
     @Override
     public void postUpdate() {
-
+        LOGGER.info("Post update called.");
     }
 }
-

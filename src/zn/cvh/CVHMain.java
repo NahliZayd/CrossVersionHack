@@ -16,14 +16,10 @@ import zn.cvh.ui.UIFrame;
 import zn.cvh.ui.listeners.CheckboxListener;
 import zn.cvh.ui.listeners.FrameListener;
 import zn.cvh.ui.listeners.SliderListener;
-import zn.cvh.utils.ClassDiscoverer;
-import zn.cvh.utils.CustomBoundingBox;
-import zn.cvh.utils.OSUtil;
-import zn.cvh.utils.TimeUtil;
-import zn.cvh.wrappers.Vars;
-import zn.cvh.wrappers.WrapperEntity;
-import zn.cvh.wrappers.WrapperEntityPlayer;
-import zn.cvh.wrappers.WrapperMinecraft;
+import zn.cvh.utils.*;
+import zn.cvh.wrapper.Wrapper;
+import zn.cvh.wrapper.WrapperManager;
+import zn.cvh.wrapper.wrappers.*;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -33,6 +29,7 @@ public class CVHMain {
         try {
             new CVHMain();
         } catch (Exception e) {
+            System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -46,11 +43,24 @@ public class CVHMain {
         }
         if (pid == null) {
             JOptionPane.showMessageDialog(null, "Minecraft not found!", "Cross Version Hack By Zayd", 0);
+
         } else {
 
             JOptionPane.showMessageDialog(null, "Minecraft found! PID: " + pid, "Cross Version Hack By Zayd", 1);
             AgentLoader.attachAgentToJVM(pid,
+
                     Agent.class,
+
+                    Entity.class,
+                    WrapperManager.class,
+                    EntityPlayer.class,
+                    World.class,
+                    MinecraftClient.class,
+                    WrapperOOP.class,
+                    Wrapper.class,
+
+                    ReflectionHelper.class,
+
                     Reach.class,
                     CustomBoundingBox.class,
                     SliderListener.class,
@@ -65,13 +75,12 @@ public class CVHMain {
                     Triggerbot.class,
                     ClassDiscoverer.class,
                     Mod.class,
-                    Vars.class,
-                    WrapperMinecraft.class,
-                    WrapperEntityPlayer.class,
                     CheckboxListener.class,
                     TimeUtil.class,
-                    SmoothAimbot.class,
-                    WrapperEntity.class);
+                    SmoothAimbot.class
+
+
+                    );
 
         }
     }

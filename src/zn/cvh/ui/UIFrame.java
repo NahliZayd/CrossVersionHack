@@ -17,12 +17,16 @@ public class UIFrame {
     Class<?> axisAlignedBBClass;
 
     public UIFrame(ClientLoader parent) {
+
         this.parent = parent;
     }
 
     public void show() {
         JFrame frame = new JFrame("Cross Version Hack By Zayd");
-        frame.addWindowListener(new FrameListener(this.parent));
+        if (this.parent != null) {
+            frame.addWindowListener(new FrameListener(this.parent));
+        }
+
         frame.setVisible(true);
 
 

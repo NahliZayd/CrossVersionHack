@@ -7,8 +7,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
 
-public class Agent
-        implements ClassFileTransformer {
+public class Agent implements ClassFileTransformer {
     private static Agent agent = null;
     private final Instrumentation instrumentation;
 
@@ -17,12 +16,20 @@ public class Agent
     }
 
     public static void agentmain(String s, Instrumentation i) {
-        agent = new Agent(i);
-        i.addTransformer(agent);
-        new ClientLoader(i);
+        System.out.println("Agentmain called with args: " + s);
+        try {
+            agent = new Agent(i);
+            i.addTransformer(agent);
+            System.out.println("Transformer added. Initializing ClientLoader.");
+            new ClientLoader(i);
+            System.out.println("ClientLoader initialized successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Agent(Instrumentation i) {
+        System.out.println("Agent constructor called");
         this.instrumentation = i;
     }
 

@@ -1,21 +1,19 @@
 package zn.cvh.module;
 
 import zn.cvh.module.value.Values;
-import zn.cvh.wrappers.WrapperMinecraft;
+import zn.cvh.wrapper.WrapperManager;
+import zn.cvh.wrapper.wrappers.MinecraftClient;
 
 import java.util.ArrayList;
 
 public abstract class Mod {
     private final String name;
     private boolean enabled = false;
-    protected static Object mcObj;
-    protected static Class<?> mcClass;
     private final ArrayList<Values> values = new ArrayList<Values>();
-
+    public MinecraftClient mc;
     public Mod(String name) throws Exception {
         this.name = name;
-        mcClass = WrapperMinecraft.getInstance().getMinecraftClass();
-        mcObj = WrapperMinecraft.getInstance().getMinecraftObject();
+        mc = WrapperManager.instance.Minecraft;
     }
 
     public void addValue(Values value) {
