@@ -1,0 +1,391 @@
+@startuml
+abstract class zn.cvh.wrapper.Wrapper {
++ ClassDiscoverer classDiscoverer
+# Class<?> clazz
+# ReflectionHelper rh
++ Class<?> getClazz()
+}
+
+
+class zn.cvh.module.modules.Triggerbot {
++ DoubleValue minCps
++ DoubleValue maxCps
++ BoolValues onlyWhileClicking
+- TimeUtil time
+- Random random
+- Robot robot
++ void update()
+- long getSleepTime()
+}
+
+
+class org.eclipse.jdt.internal.jarinjarloader.JIJConstants {
+~ {static} String REDIRECTED_CLASS_PATH_MANIFEST_NAME
+~ {static} String REDIRECTED_MAIN_CLASS_MANIFEST_NAME
+~ {static} String DEFAULT_REDIRECTED_CLASSPATH
+~ {static} String MAIN_METHOD_NAME
+~ {static} String JAR_INTERNAL_URL_PROTOCOL_WITH_COLON
+~ {static} String JAR_INTERNAL_SEPARATOR
+~ {static} String INTERNAL_URL_PROTOCOL_WITH_COLON
+~ {static} String INTERNAL_URL_PROTOCOL
+~ {static} String PATH_SEPARATOR
+~ {static} String CURRENT_DIR
+~ {static} String UTF8_ENCODING
+}
+
+class zn.cvh.wrapper.wrappers.Entity {
++ Object entityObj
++ Field rotationYaw
++ Field rotationPitch
++ Field posX
++ Field posY
++ Field posZ
++ Field width
++ Field height
++ Class<?> axisAlignedBBClass
++ float[] getViewAngles()
++ void setViewAngles(float,float)
++ float getYaw()
++ float getPitch()
++ void setYaw(float)
++ void setPitch(float)
++ double getPosX()
++ double getPosY()
++ double getPosZ()
++ double getWidth()
++ double getHeight()
++ double getDistanceToEntity(Entity)
++ void setEntityBoundingBox(CustomBoundingBox)
++ boolean isAlive()
++ boolean isEntityLivingBase()
++ double getEyeHeight()
++ CustomBoundingBox getEntityBoundingBox()
++ boolean canEntityBeSeen(Entity)
++ boolean isInvisible()
++ int getMaxHurtTime()
++ int getHurtTime()
++ float getMotionX()
++ float getMotionY()
++ float getMotionZ()
++ void setMotionX(double)
++ void setMotionY(double)
++ void setMotionZ(double)
+}
+
+
+class zn.cvh.module.value.Values {
+- String name
++ String getName()
+}
+
+
+class org.eclipse.jdt.internal.jarinjarloader.RsrcURLStreamHandlerFactory {
+- ClassLoader classLoader
+- URLStreamHandlerFactory chainFac
++ URLStreamHandler createURLStreamHandler(String)
++ void setURLStreamHandlerFactory(URLStreamHandlerFactory)
+}
+
+
+class zn.cvh.utils.TimeUtil {
+- long lastMS
++ long getCurrentMS()
++ long getLastMS()
++ boolean hasReached(long)
++ void reset()
++ void setLastMS(long)
++ long getTimeSinceReset()
+}
+
+
+class zn.cvh.ui.listeners.CheckboxListener {
+- Mod mod
++ void itemStateChanged(ItemEvent)
+}
+
+
+class zn.cvh.client.ClientThread {
+- ClientLoader parent
++ void run()
+}
+
+
+class zn.cvh.wrapper.wrappers.EntityPlayer {
++ float getMoveStrafing()
++ boolean isMouseLeftButtonPressed()
+}
+
+class zn.cvh.utils.CustomBoundingBox {
++ double minX
++ double maxX
+}
+
+class zn.cvh.utils.OSUtil {
++ {static} String getPlatform()
++ {static} File getWorkingDirectory()
+}
+
+class zn.cvh.module.modules.SmoothAimbot {
+- DoubleValue hor
+- DoubleValue ver
+- DoubleValue dist
+- DoubleValue fov
+- BoolValues weapon
+- BoolValues click
+- BoolValues strafeIncrease
+- BoolValues StopOnHitboxes
+~ boolean ghu
++ void update()
+- void faceEntity(Entity)
+- float[] getRotationsNeeded(Entity)
+- float wrapAngleTo180_float(float)
+- double sqrt_double(double)
+- Entity getTargetEntity()
++ double getDistanceBetweenAngles(float,float)
++ float[] getAngle(Entity)
+- boolean canTarget(Entity)
+- double limitAngleChange(double,double,double)
+}
+
+
+class zn.cvh.agent.AgentLoader {
+- {static} String AES
+- {static} Key secretKey
++ {static} void attachAgentToJVM(String,Class,Class)
++ {static} File generateAgentJar(Class,Class)
++ {static} File generateObfJar(Class,Class)
+- {static} String unqualify(Class)
+- {static} byte[] getBytesFromStream(InputStream)
+- {static} String obfuscateClass(String)
+- {static} String obfuscateName(String)
+- {static} Key generateSecretKey()
+- {static} String encrypt(String)
+- {static} String decrypt(String)
+}
+
+
+class zn.cvh.module.value.values.BoolValues {
+- boolean value
++ boolean getValue()
++ void setValue(boolean)
+}
+
+
+class org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader {
++ {static} void main(String[])
+- {static} ManifestInfo getManifestInfo()
+- {static} String[] splitSpaces(String)
+}
+
+class org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader$ManifestInfo {
+~ String rsrcMainClass
+~ String[] rsrcClassPath
+}
+
+class zn.cvh.module.modules.Velocity {
+~ DoubleValue horizontal
+~ DoubleValue vertical
++ void update()
+}
+
+
+class zn.cvh.agent.Agent {
+- {static} Agent agent
+- Instrumentation instrumentation
++ {static} Agent getInstance()
++ {static} void agentmain(String,Instrumentation)
++ byte[] transform(ClassLoader,String,Class<?>,ProtectionDomain,byte[])
++ Instrumentation getInstrumentation()
+}
+
+
+class zn.cvh.CVHMain {
++ {static} void main(String[])
+}
+
+class zn.cvh.wrapper.wrappers.World {
+- Field entitiesField
+- Field playerEntitiesField
+- Object entities
+- Object players
+~ Field worldField
++ List<Entity> getEntities()
++ List<EntityPlayer> getPlayers()
+}
+
+
+class zn.cvh.ui.UIFrame {
++ {static} JTextArea debugArea
++ ClientLoader parent
+~ Class<?> axisAlignedBBClass
++ void show()
+}
+
+
+abstract class zn.cvh.module.Mod {
+- String name
+- boolean enabled
+- ArrayList<Values> values
++ MinecraftClient mc
++ void addValue(Values)
++ ArrayList<Values> getValues()
++ {abstract}void update()
++ void postUpdate()
++ String getName()
++ void setEnabled(boolean)
++ boolean isEnabled()
+}
+
+
+class zn.cvh.utils.ReflectionHelper {
+- {static} Logger LOGGER
+- Class<?> clazz
++ Object getField(String,Object)
++ void setField(String,Object,Object)
++ Object invokeGetter(Method,Object,Object)
++ void invoke(Method,Object,Object)
++ Object invokeReturn(Method,Object,Object)
++ {static} Class<?> getClass(String)
++ {static} Object getField(Class<?>,String,Object)
+}
+
+
+class zn.cvh.ui.listeners.SliderListener {
+- DoubleValue value
+- JLabel label
++ void stateChanged(ChangeEvent)
+}
+
+
+class zn.cvh.ui.listeners.FrameListener {
+- ClientLoader parent
++ void windowOpened(WindowEvent)
++ void windowClosing(WindowEvent)
++ void windowClosed(WindowEvent)
++ void windowIconified(WindowEvent)
++ void windowDeiconified(WindowEvent)
++ void windowActivated(WindowEvent)
++ void windowDeactivated(WindowEvent)
+}
+
+
+class zn.cvh.wrapper.wrappers.MinecraftClient {
+~ World world
+~ EntityPlayer thePlayer
+~ Field inGameHasFocus
+- Field objectMouseOverField
+- Field entityHitField
++ Object instance()
++ Object getEntityHit()
++ boolean inGameHasFocus()
++ Object getPlayerObj()
++ EntityPlayer getPlayer()
++ Object getWorldObj()
++ World getWorld()
+}
+
+
+class zn.cvh.wrapper.WrapperManager {
+- {static} Logger LOGGER
++ {static} WrapperManager instance
++ MinecraftClient Minecraft
++ ClassDiscoverer classDiscoverer
+}
+
+class org.eclipse.jdt.internal.jarinjarloader.RsrcURLStreamHandler {
+- ClassLoader classLoader
+# URLConnection openConnection(URL)
+# void parseURL(URL,String,int,int)
+}
+
+
+class zn.cvh.client.ClientLoader {
+- Instrumentation inst
+- UIFrame concealUI
+- List<Mod> modules
+- ClientThread moduleThread
++ JSlider aimbotForce
++ ClassDiscoverer discoverer
++ void closing()
++ Instrumentation getInst()
++ UIFrame getConcealUI()
++ List<Mod> getModules()
+}
+
+
+abstract class zn.cvh.wrapper.wrappers.WrapperOOP {
+# Object instance
++ Object getInstance()
+}
+
+
+class zn.cvh.module.value.values.DoubleValue {
+- double value
+- double min
+- double max
+- boolean decimal
++ boolean isDecimal()
++ double getMin()
++ double getMax()
++ double getValue()
++ void setValue(double)
+}
+
+
+class zn.cvh.utils.ClassDiscoverer {
+- Class<?> minecraftClass
+- Class<?> axisAlignedBBClass
+- Class<?> threadExecutor
+- Class<?> entityLivingBaseClass
+- Class<?> entityJoinClass
+- Class<?> MouseClass
++ Class<?> getThreadExecutor()
++ Class<?> getMinecraftClass()
++ Class<?> getAxisAlignedBBClass()
++ Class<?> getEntityLivingBaseClass()
++ Class<?> getEntityJoinClass()
++ Class<?> getMouseClass()
+}
+
+
+class zn.cvh.module.modules.Reach {
+- {static} Logger LOGGER
++ DoubleValue minReach
++ DoubleValue maxReach
++ void update()
+- double getDist()
+- float a(double,double)
++ void postUpdate()
+}
+
+
+class org.eclipse.jdt.internal.jarinjarloader.RsrcURLConnection {
+- ClassLoader classLoader
++ void connect()
++ InputStream getInputStream()
+}
+
+
+
+
+zn.cvh.module.Mod <|-- zn.cvh.module.modules.Triggerbot
+zn.cvh.wrapper.Wrapper <|-- zn.cvh.wrapper.wrappers.Entity
+java.net.URLStreamHandlerFactory <|.. org.eclipse.jdt.internal.jarinjarloader.RsrcURLStreamHandlerFactory
+java.awt.event.ItemListener <|.. zn.cvh.ui.listeners.CheckboxListener
+zn.cvh.client.Thread <|-- zn.cvh.client.ClientThread
+zn.cvh.wrapper.wrappers.Entity <|-- zn.cvh.wrapper.wrappers.EntityPlayer
+zn.cvh.module.Mod <|-- zn.cvh.module.modules.SmoothAimbot
+zn.cvh.module.value.Values <|-- zn.cvh.module.value.values.BoolValues
+org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader +.. org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader$ManifestInfo
+zn.cvh.module.Mod <|-- zn.cvh.module.modules.Velocity
+java.lang.instrument.ClassFileTransformer <|.. zn.cvh.agent.Agent
+zn.cvh.wrapper.wrappers.WrapperOOP <|-- zn.cvh.wrapper.wrappers.World
+javax.swing.event.ChangeListener <|.. zn.cvh.ui.listeners.SliderListener
+java.awt.event.WindowListener <|.. zn.cvh.ui.listeners.FrameListener
+zn.cvh.wrapper.Wrapper <|-- zn.cvh.wrapper.wrappers.MinecraftClient
+java.net.URLStreamHandler <|-- org.eclipse.jdt.internal.jarinjarloader.RsrcURLStreamHandler
+zn.cvh.wrapper.Wrapper <|-- zn.cvh.wrapper.wrappers.WrapperOOP
+zn.cvh.module.value.Values <|-- zn.cvh.module.value.values.DoubleValue
+zn.cvh.module.Mod <|-- zn.cvh.module.modules.Reach
+java.net.URLConnection <|-- org.eclipse.jdt.internal.jarinjarloader.RsrcURLConnection
+@enduml
