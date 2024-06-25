@@ -1,0 +1,157 @@
+@startuml
+class zn.mazesolver.entity.entitys.Player {
+~ double playerAngle
+~ int w
+~ int h
+~ int playerSize
+~ double playerArmLength
+~ double armLength
++ void draw(Graphics)
+# double getAttackRadius()
++ void move()
++ void movePlayer(int)
++ void updatePlayerDirection(int,int)
++ void performAttackAnimation(Graphics2D,Entity)
+}
+
+class zn.mazesolver.world.Node {
+~ int row
+~ Node parent
+~ int f()
+}
+
+class zn.mazesolver.world.Maze {
+  -numRows: int
+  -numColumns: int
+  -maze: int[][]
+  -entities: ArrayList<Entity>
+  +Maze()
+  +run(): void
+  +generate(): void
+  +solveMaze(int, int): boolean
+  +getEntities(): ArrayList<Entity>
+  +setSpeed(int): void
+  +runSolve(): void
+  +getPlayer(): Entity
+}
+
+
+
+class zn.mazesolver.ui.Frame {
+~ Maze maze
+- void initComponent()
+- int getAdjustedValue(JSlider)
+}
+
+
+abstract class zn.mazesolver.entity.Entity {
+- int row
+- int col
+- int health
+~ List<Class<Entity>> targets
+- int damage
+- boolean isDead
+- Color color
++ Maze world
+~ int maxHealth
++ Color getColor()
++ void setColor(Color)
++ void hurt(int)
+- void performHurtAnimation(Graphics2D)
++ boolean canAttack(Entity)
+- boolean isVisible(Entity)
++ void addTarget(Class)
++ void attack()
+- void attack(Entity)
++ void draw(Graphics)
++ int getRow()
++ int getCol()
++ int getHealth()
++ int getDamage()
++ void setRow(int)
++ void setCol(int)
++ void setHealth(int)
++ void setDamage(int)
++ boolean isDead()
++ void setDead(boolean)
++ boolean isValidMove(int,int)
+# {abstract}double getAttackRadius()
++ {abstract}void move()
++ {abstract}void performAttackAnimation(Graphics2D,Entity)
+}
+
+
+class zn.mazesolver.entity.entitys.Monster {
+~ int size
++ int getSize()
++ void setSize(int)
++ void draw(Graphics)
+# double getAttackRadius()
++ void move()
++ void performAttackAnimation(Graphics2D,Entity)
++ void updateMonster()
+- void moveRandomly()
+- int calculateDirectionToPlayer(int,int)
+}
+
+
+class zn.mazesolver.ui.MainMenu {
++ CardLayout cardLayout
++ JPanel cardPanel
++ {static} Maze maze
+- JPanel mazePanel
+- JPanel settingsPanel
+- JPanel bossPanel
++ JCheckBox customDimension
+- void initMainMenu()
+- void initMazePanel()
+- void initBossPanel()
+- void initSettingsPanel()
++ void showBossRoom()
+}
+
+
+class zn.mazesolver.Game {
++ {static} void main(String[])
+}
+
+enum zn.mazesolver.Difficulty {
++  Easy
++  Medium
++  Hard
+- int rows
+- int columns
+- int monsterNumber
+- int monsterHealth
+- int monsterDamage
+- double monsterSpeed
++ int getRows()
++ int getColumns()
++ int getMonsterNumber()
++ int getMonsterHealth()
++ int getMonsterDamage()
++ int getMonsterSpeed()
+}
+
+
+class zn.mazesolver.Settings {
++ {static} int rows
++ {static} int columns
++ {static} int volume
++ {static} Difficulty difficulty
++ {static} boolean sound
++ {static} boolean music
++ {static} int generationSpeed
+}
+
+
+
+zn.mazesolver.entity.Entity <|-- zn.mazesolver.entity.entitys.Player
+zn.mazesolver.ui.JPanel <|-- zn.mazesolver.ui.Frame
+zn.mazesolver.entity.Entity <|-- zn.mazesolver.entity.entitys.Monster
+zn.mazesolver.ui.JFrame <|-- zn.mazesolver.ui.MainMenu
+zn.mazesolver.world.Maze "1" *-- "many" Entity : contains
+zn.mazesolver.Game --> zn.mazesolver.ui.MainMenu
+zn.mazesolver.Game --> zn.mazesolver.Settings
+zn.mazesolver.world.Maze --> zn.mazesolver.world.Node
+@enduml
