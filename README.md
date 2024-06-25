@@ -49,6 +49,9 @@ This project is a Minecraft Cross Version hack based on the Xerxes client, utili
   
 - Ensure compliance with Minecraft's rules and policies as well as those of any server on which you use this hack.
 
+### Class diagram 
+![ClassDiagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/NahliZayd/CrossVersionHack/master/classes.puml)
+
 #### Contribution
 
 Contributions to this project are welcome. Feel free to submit pull requests to add features, fix bugs, or improve documentation.
